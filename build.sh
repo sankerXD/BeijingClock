@@ -11,7 +11,7 @@ MACOS_DIR="${CONTENTS_DIR}/MacOS"
 RESOURCES_DIR="${CONTENTS_DIR}/Resources"
 CACHE_DIR="${DIR}/.build_cache"
 
-echo "🔨 正在编译 ${APP_NAME}..."
+echo "🔨 正在编译 ${APP_NAME} (Universal Binary: Apple Silicon + Intel)..."
 
 # Create directories
 mkdir -p "$MACOS_DIR"
@@ -25,15 +25,31 @@ if [ -f "AppIcon.icns" ]; then
     echo "🎨 AppIcon.icns 装配完成"
 fi
 
-# Compile Swift with local module cache
+# Compile Universal Binary (arm64 + x86_64) for macOS 11.0+
 swiftc -O -whole-module-optimization \
+    -target arm64-apple-macos11.0 \
     -module-cache-path "$CACHE_DIR" \
     -Xclang-linker -fmodules-cache-path="$CACHE_DIR" \
     -framework AppKit \
     -framework Foundation \
     -framework ServiceManagement \
     main.swift \
-    -o "${MACOS_DIR}/${APP_NAME}"
+    -o "${MACOS_DIR}/${APP_NAME}_arm64"
+
+swiftc -O -whole-module-optimization \
+    -target x86_64-apple-macos11.0 \
+    -module-cache-path "$CACHE_DIR" \
+    -Xclang-linker -fmodules-cache-path="$CACHE_DIR" \
+    -framework AppKit \
+    -framework Foundation \
+    -framework ServiceManagement \
+    main.swift \
+    -o "${MACOS_DIR}/${APP_NAME}_x86"
+
+# Create universal binary using lipo
+lipo -create -output "${MACOS_DIR}/${APP_NAME}" "${MACOS_DIR}/${APP_NAME}_arm64" "${MACOS_DIR}/${APP_NAME}_x86"
+rm -f "${MACOS_DIR}/${APP_NAME}_arm64" "${MACOS_DIR}/${APP_NAME}_x86"
+chmod +x "${MACOS_DIR}/${APP_NAME}"
 
 # Code sign locally for ad-hoc execution on macOS
 codesign --force --deep --sign - "$APP_BUNDLE" 2>/dev/null || true
