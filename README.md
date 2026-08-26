@@ -41,7 +41,7 @@
 ### 2. 源码本地安装
 ```bash
 # 克隆仓库
-git clone https://github.com/YOUR_USERNAME/BeijingClock.git
+git clone https://github.com/sankerXD/BeijingClock.git
 cd BeijingClock
 
 # 一键安装到应用程序并启动
