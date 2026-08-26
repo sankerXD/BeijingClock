@@ -8,6 +8,13 @@
 
 ---
 
+<div align="center">
+  <h3>🔥 还在为防止 Claude / ChatGPT / Cursor 封号将 Mac 伪装成美区时区而苦恼？</h3>
+  <p><strong>试试这款专为跨时区/节点伪装用户打造的独立原生 macOS 菜单栏北京时钟与迷你日历！</strong></p>
+</div>
+
+---
+
 ## ✨ 核心特性
 
 - 🚀 **100% 纯原生**：基于 Swift / AppKit 打造，极致轻量，运行几乎 **0% CPU**、几 MB 内存。
