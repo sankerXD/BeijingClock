@@ -73,7 +73,7 @@ bash build.sh
 
 <p align="center">
   <a href="https://afdian.com/a/sankerXD" target="_blank">
-    <img src="https://pic1.afdiancdn.com/default/btn/btn-afdian-orange.png" alt="在爱发电支持我" width="220" />
+    <img src="assets/afdian.jpg" alt="在爱发电支持我" width="260" />
   </a>
 </p>
 
