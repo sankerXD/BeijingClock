@@ -1,0 +1,42 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build BeijingClock App
+        run: |
+          chmod +x build.sh
+          bash build.sh
+
+      - name: Package App Bundle
+        run: |
+          # Use ditto to preserve macOS metadata and executable permissions
+          ditto -c -k --sequesterRsrc --keepParent BeijingClock.app BeijingClock-macOS.zip
+          shasum -a 256 BeijingClock-macOS.zip > BeijingClock-macOS.zip.sha256
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          name: BeijingClock ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            BeijingClock-macOS.zip
+            BeijingClock-macOS.zip.sha256

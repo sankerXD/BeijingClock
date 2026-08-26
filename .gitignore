@@ -1,0 +1,11 @@
+.DS_Store
+.build_cache/
+*.app/
+*.o
+*.swiftdoc
+*.swiftmodule
+icon_raw.jpg
+icon_flat.jpg
+icon_refined.jpg
+*.zip
+*.dmg
