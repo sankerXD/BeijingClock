@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: '发布版本号 (例如 v1.1.0)'
+        required: false
+        default: 'v1.0.0'
 
 permissions:
   contents: write
@@ -17,6 +22,19 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Render Real Binary JPG and PNG Assets
+        run: |
+          mkdir -p assets
+          sips -s format jpeg -s formatOptions 95 -z 512 512 assets/icon.svg --out assets/icon.jpg
+          sips -s format png -z 512 512 assets/icon.svg --out assets/icon.png
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/icon.jpg assets/icon.png
+          git commit -m "assets: commit real binary icon.jpg and icon.png [skip ci]" || true
+          git push origin main || true
 
       - name: Build BeijingClock App
         run: |
@@ -25,15 +43,25 @@ jobs:
 
       - name: Package App Bundle
         run: |
-          # Use ditto to preserve macOS metadata and executable permissions
           ditto -c -k --sequesterRsrc --keepParent BeijingClock.app BeijingClock-macOS.zip
           shasum -a 256 BeijingClock-macOS.zip > BeijingClock-macOS.zip.sha256
 
+      - name: Determine Release Tag
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.version }}"
+            [ -z "$TAG" ] && TAG="v1.0.0"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
-          name: BeijingClock ${{ github.ref_name }}
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: BeijingClock ${{ steps.vars.outputs.tag }}
           draft: false
           prerelease: false
           generate_release_notes: true

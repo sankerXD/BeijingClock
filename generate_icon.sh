@@ -11,11 +11,18 @@ if [ -z "$SRC_IMAGE" ] || [ ! -f "$SRC_IMAGE" ]; then
 fi
 
 TEMP_IMG="${DIR}/.temp_icon.png"
-# Check if file is ASCII text (e.g. base64)
-if file "$SRC_IMAGE" | grep -qE "ASCII text|text"; then
-    echo "🔄 检测到 Base64 文本，正在解码为二进制 PNG..."
-    base64 -d "$SRC_IMAGE" > "$TEMP_IMG"
-    SRC_IMAGE="$TEMP_IMG"
+
+# If it's an SVG or text file containing data:image/png;base64, or raw base64
+if file "$SRC_IMAGE" | grep -qE "SVG|XML|ASCII text|text"; then
+    echo "🔄 正在从 SVG / 文本提取图像..."
+    if grep -q "data:image/png;base64," "$SRC_IMAGE"; then
+        sed -n 's/.*data:image\/png;base64,\([A-Za-z0-9+/=]*\).*/\1/p' "$SRC_IMAGE" | head -n 1 | base64 -d > "$TEMP_IMG"
+    else
+        base64 -d "$SRC_IMAGE" > "$TEMP_IMG" 2>/dev/null || true
+    fi
+    if [ -s "$TEMP_IMG" ]; then
+        SRC_IMAGE="$TEMP_IMG"
+    fi
 fi
 
 ICONSET="AppIcon.iconset"
@@ -24,7 +31,6 @@ mkdir -p "$ICONSET"
 
 echo "🎨 正在生成各尺寸图标..."
 
-# Generate standard macOS icon set sizes
 sips -s format png -z 16 16     "$SRC_IMAGE" --out "$ICONSET/icon_16x16.png" >/dev/null 2>&1 || true
 sips -s format png -z 32 32     "$SRC_IMAGE" --out "$ICONSET/icon_16x16@2x.png" >/dev/null 2>&1 || true
 sips -s format png -z 32 32     "$SRC_IMAGE" --out "$ICONSET/icon_32x32.png" >/dev/null 2>&1 || true
