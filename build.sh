@@ -21,7 +21,7 @@ mkdir -p "$CACHE_DIR"
 # Generate AppIcon.icns if not present
 if [ ! -f "AppIcon.icns" ] && [ -f "assets/icon.png" ]; then
     echo "🎨 正在从 assets/icon.png 生成 AppIcon.icns..."
-    bash generate_icon.sh assets/icon.png
+    bash generate_icon.sh assets/icon.png || echo "⚠️ 图标生成跳过"
 fi
 
 # Copy Info.plist and AppIcon
