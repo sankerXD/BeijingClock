@@ -18,21 +18,11 @@ mkdir -p "$MACOS_DIR"
 mkdir -p "$RESOURCES_DIR"
 mkdir -p "$CACHE_DIR"
 
-# Generate AppIcon.icns ONLY if completely missing
-if [ ! -f "AppIcon.icns" ]; then
-    if [ -f "assets/icon.png" ]; then
-        echo "🎨 正在从 assets/icon.png 生成 AppIcon.icns..."
-        bash generate_icon.sh assets/icon.png || true
-    elif [ -f "assets/icon.jpg" ]; then
-        echo "🎨 正在从 assets/icon.jpg 生成 AppIcon.icns..."
-        bash generate_icon.sh assets/icon.jpg || true
-    fi
-fi
-
 # Copy Info.plist and AppIcon
 cp Info.plist "$CONTENTS_DIR/Info.plist"
 if [ -f "AppIcon.icns" ]; then
     cp AppIcon.icns "$RESOURCES_DIR/AppIcon.icns"
+    echo "🎨 AppIcon.icns 装配完成"
 fi
 
 # Compile Swift with local module cache
