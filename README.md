@@ -69,11 +69,11 @@ bash build.sh
 
 ## ☕️ 请作者喝杯咖啡
 
-如果这个小工具帮到了你、解决了你在海外时区看北京时间与日历的烦恼，欢迎请作者喝杯咖啡支持持续维护：
+如果这个小工具帮到了你、解决了你在海外时区看北京时间与日历的烦恼，欢迎请作者喝杯咖啡支持持续维护与优化：
 
-<p align="left">
+<p align="center">
   <a href="https://afdian.com/a/sankerXD" target="_blank">
-    <img src="https://img.shields.io/badge/爱发电-请作者喝杯咖啡-946ce6?style=for-the-badge&logo=alipay&logoColor=white" alt="爱发电赞助" />
+    <img src="https://pic1.afdiancdn.com/default/btn/btn-afdian-orange.png" alt="在爱发电支持我" width="220" />
   </a>
 </p>
 
