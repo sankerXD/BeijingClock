@@ -1,7 +1,7 @@
 # 🇨🇳 macOS 菜单栏北京时间与迷你日历小工具 (BeijingClock)
 
 <p align="center">
-  <img src="assets/icon.svg" width="128" height="128" alt="BeijingClock App Icon" />
+  <img src="assets/icon.jpg" width="128" height="128" alt="BeijingClock App Icon" />
   <br>
   <em>专为海外时区（美区等）Mac 用户打造的极简原生北京时间与迷你日历</em>
 </p>
