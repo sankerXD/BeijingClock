@@ -38,6 +38,18 @@
 ### 1. 从 Release 下载开箱即用
 前往 [Releases 页面](../../releases) 下载最新的 `BeijingClock-macOS.zip`，解压后拖入 `应用程序 (Applications)` 文件夹即可运行。
 
+> [!TIP]
+> **⚠️ 常见问题：下载后提示“已损坏”或打不开？**
+> 
+> 由于个人开源应用未购买苹果开发者付费签名证书，从浏览器下载后 macOS Gatekeeper 会自动添加隔离标记。
+> 
+> **解决方法（一键解除隔离）**：
+> 打开终端执行以下命令即可正常启动：
+> ```bash
+> xattr -cr /Applications/BeijingClock.app && open /Applications/BeijingClock.app
+> ```
+> *(或在「访达」中按住 `Control` 键点击该 App，选择「打开」并在弹窗中再次点击「打开」)*
+
 ### 2. 源码本地安装
 ```bash
 # 克隆仓库
