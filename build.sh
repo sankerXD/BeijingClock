@@ -18,6 +18,12 @@ mkdir -p "$MACOS_DIR"
 mkdir -p "$RESOURCES_DIR"
 mkdir -p "$CACHE_DIR"
 
+# Generate AppIcon.icns if not present
+if [ ! -f "AppIcon.icns" ] && [ -f "assets/icon.png" ]; then
+    echo "🎨 正在从 assets/icon.png 生成 AppIcon.icns..."
+    bash generate_icon.sh assets/icon.png
+fi
+
 # Copy Info.plist and AppIcon
 cp Info.plist "$CONTENTS_DIR/Info.plist"
 if [ -f "AppIcon.icns" ]; then
