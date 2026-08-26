@@ -22,19 +22,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Render Real Binary JPG and PNG Assets
-        run: |
-          mkdir -p assets
-          sips -s format jpeg -s formatOptions 95 -z 512 512 assets/icon.svg --out assets/icon.jpg
-          sips -s format png -z 512 512 assets/icon.svg --out assets/icon.png
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/icon.jpg assets/icon.png
-          git commit -m "assets: commit real binary icon.jpg and icon.png [skip ci]" || true
-          git push origin main || true
 
       - name: Build BeijingClock App
         run: |

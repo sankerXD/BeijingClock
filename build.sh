@@ -18,14 +18,14 @@ mkdir -p "$MACOS_DIR"
 mkdir -p "$RESOURCES_DIR"
 mkdir -p "$CACHE_DIR"
 
-# Generate AppIcon.icns if not present
+# Generate AppIcon.icns ONLY if completely missing
 if [ ! -f "AppIcon.icns" ]; then
-    if [ -f "assets/icon.svg" ]; then
-        echo "🎨 正在从 assets/icon.svg 生成 AppIcon.icns..."
-        bash generate_icon.sh assets/icon.svg || echo "⚠️ 图标生成跳过"
-    elif [ -f "assets/icon.png" ]; then
+    if [ -f "assets/icon.png" ]; then
         echo "🎨 正在从 assets/icon.png 生成 AppIcon.icns..."
-        bash generate_icon.sh assets/icon.png || echo "⚠️ 图标生成跳过"
+        bash generate_icon.sh assets/icon.png || true
+    elif [ -f "assets/icon.jpg" ]; then
+        echo "🎨 正在从 assets/icon.jpg 生成 AppIcon.icns..."
+        bash generate_icon.sh assets/icon.jpg || true
     fi
 fi
 
