@@ -15,7 +15,6 @@ class Preferences {
         case use24Hour = "use24Hour"
         case languageStyle = "languageStyle" // "chinese", "english"
         case prefixStyle = "prefixStyle" // "none", "flag", "text", "cst"
-        case showLockScreenText = "showLockScreenText"
     }
     
     var showDate: Bool {
@@ -46,11 +45,6 @@ class Preferences {
     var prefixStyle: String {
         get { defaults.string(forKey: Key.prefixStyle.rawValue) ?? "none" }
         set { defaults.set(newValue, forKey: Key.prefixStyle.rawValue) }
-    }
-    
-    var showLockScreenText: Bool {
-        get { defaults.object(forKey: Key.showLockScreenText.rawValue) as? Bool ?? false }
-        set { defaults.set(newValue, forKey: Key.showLockScreenText.rawValue) }
     }
 }
 
@@ -103,60 +97,6 @@ class LaunchAtLoginHelper {
         } else {
             try? fm.removeItem(at: launchAgentPlistURL)
         }
-    }
-}
-
-// MARK: - Lock Screen Helper
-class LockScreenHelper {
-    static let shared = LockScreenHelper()
-    
-    private let key = "LoginwindowText" as CFString
-    private let appID = "com.apple.loginwindow" as CFString
-    
-    func setupObserver() {
-        // Observe screen locked and system sleep notifications
-        DistributedNotificationCenter.default().addObserver(
-            forName: NSNotification.Name("com.apple.screenIsLocked"),
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.handleScreenLocked()
-        }
-        
-        NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.willSleepNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.handleScreenLocked()
-        }
-    }
-    
-    func handleScreenLocked() {
-        guard Preferences.shared.showLockScreenText else { return }
-        updateLockScreenText()
-    }
-    
-    func updateLockScreenText() {
-        if Preferences.shared.showLockScreenText {
-            let beijingTZ = TimeZone(identifier: "Asia/Shanghai") ?? TimeZone(secondsFromGMT: 8 * 3600)!
-            let formatter = DateFormatter()
-            formatter.timeZone = beijingTZ
-            formatter.dateFormat = "yyyy-MM-dd HH:mm (EEE)"
-            let timeStr = formatter.string(from: Date())
-            let text = "🇨🇳 北京时间: \(timeStr) (UTC+8)" as CFString
-            
-            CFPreferencesSetValue(key, text, appID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
-            CFPreferencesSynchronize(appID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
-        } else {
-            CFPreferencesSetValue(key, nil, appID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
-            CFPreferencesSynchronize(appID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
-        }
-    }
-    
-    func setEnabled(_ enabled: Bool) {
-        Preferences.shared.showLockScreenText = enabled
-        updateLockScreenText()
     }
 }
 
@@ -626,10 +566,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setupSettingsMenu()
         startTimer()
         updateDisplay()
-        LockScreenHelper.shared.setupObserver()
-        if Preferences.shared.showLockScreenText {
-            LockScreenHelper.shared.updateLockScreenText()
-        }
     }
     
     private func setupPopover() {
@@ -772,11 +708,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         settingsMenu.addItem(NSMenuItem.separator())
         
-        let lockScreenItem = NSMenuItem(title: "在锁屏界面显示北京时间备注", action: #selector(toggleLockScreenText), keyEquivalent: "")
-        lockScreenItem.target = self
-        lockScreenItem.state = prefs.showLockScreenText ? .on : .off
-        settingsMenu.addItem(lockScreenItem)
-        
         let launchItem = NSMenuItem(title: "开机自启动", action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
         launchItem.target = self
         launchItem.state = LaunchAtLoginHelper.shared.isEnabled ? .on : .off
@@ -788,11 +719,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     // MARK: - Actions
-    @objc private func toggleLockScreenText() {
-        let current = Preferences.shared.showLockScreenText
-        LockScreenHelper.shared.setEnabled(!current)
-    }
-    
     @objc private func toggleShowDate() {
         Preferences.shared.showDate.toggle()
         updateDisplay()
